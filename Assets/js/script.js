@@ -1,5 +1,6 @@
 const formEl = $('#location-form');
 const cityInputEl = $('#city-input');
+let weatherEl = $('#weather-info');
 
 const ApiKey = "5050a3ebd6991b9594e93c4effbeb11c";
 let cityInput;
@@ -43,16 +44,44 @@ let handleFormSubmit = e => {
                  })
                 .then(function (forecastData) {
                     for (let i = 0; i < forecastData.list.length; i++) {
-                        var unixFormat = moment.unix(forecastData.list[i].dt).format("MMM Do, YYYY, hh:mm:ss");
-                        
+                        let hour = moment.unix(forecastData.list[i].dt).format("H");
+                        let dayOfTheMonth = moment.unix(forecastData.list[i].dt).format("MMM Do");
+                        let hourStr;
+
+                        if (hour > 12) {
+                            hour -= 12;
+                            hourStr = hour + 'pm'
+                        }
+                        else if (hour == 12) {
+                            hourStr = hour + 'pm'
+                        }
+                        else {
+                            hourStr = hour + 'am'
+                        }
+
+
                         let forecastObject = {
-                            time: unixFormat,
+                            day: dayOfTheMonth,
+                            time: hourStr,
                             temp: forecastData.list[i].main.temp,
                             humidity: forecastData.list[i].main.humidity,
                             wind: forecastData.list[i].wind.speed
                         };
                         
                         forecast.push(forecastObject);
+                    }
+
+                    for (let i = 0; i < forecast.length; i++) {
+                        
+
+                        if (i == 0 || forecast[i].day !== forecast[i - 1].day) {
+                            let dateEl = $('<div>').attr('border-top', '1px solid black').text(forecast[i].day);
+                            weatherEl.append(dateEl);
+                        } 
+
+                        let timeEL = $('<div>').text(forecast[i].time + ' '
+                            + forecast[i].temp + ' ' + forecast[i].humidity + ' ' + forecast[i].wind);
+                        weatherEl.append(timeEL);
                     }
                 })
             
