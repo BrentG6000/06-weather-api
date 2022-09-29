@@ -9,10 +9,11 @@ let currentWeatherApi = "https://api.openweathermap.org/data/2.5/weather?lat=";
 let lat;
 let long;
 let forecast = [];
-
-let currentWeather;
-
-
+let currentWeather = {
+    temp: "",
+    humidity: "",
+    wind: ""
+};
 
 let handleFormSubmit = e => {
     e.preventDefault();
@@ -40,22 +41,19 @@ let handleFormSubmit = e => {
                     }
                     return response.json();
                  })
-                .then(function (data) {
-                    for (let i = 0; i < data.list.length; i++) {
-                        
-                        var unixFormat = moment.unix(data.list[i].dt).format("MMM Do, YYYY, hh:mm:ss");
+                .then(function (forecastData) {
+                    for (let i = 0; i < forecastData.list.length; i++) {
+                        var unixFormat = moment.unix(forecastData.list[i].dt).format("MMM Do, YYYY, hh:mm:ss");
                         
                         let forecastObject = {
                             time: unixFormat,
-                            temp: data.list[i].main.temp,
-                            Humidity: data.list[i].main.humidity,
-                            wind: data.list[i].wind.speed
+                            temp: forecastData.list[i].main.temp,
+                            humidity: forecastData.list[i].main.humidity,
+                            wind: forecastData.list[i].wind.speed
                         };
                         
                         forecast.push(forecastObject);
-                        
                     }
-                    console.log(forecast);
                 })
             
             fetch(currentWeatherApi + lat + "&lon=" + long + "&" + "appid=" + ApiKey + "&units=imperial")
@@ -65,9 +63,11 @@ let handleFormSubmit = e => {
                     }
                     return response.json();
                 })
-                .then(function (data) {
-                    
-                
+                .then(function (currentWeatherData) {
+                    currentWeather.temp = currentWeatherData.main.temp;
+                    currentWeather.humidity = currentWeatherData.main.humidity;
+                    currentWeather.wind = currentWeatherData.wind.speed;
+                    console.log(currentWeather);
             })
         })
 }
