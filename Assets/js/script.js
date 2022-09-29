@@ -20,7 +20,7 @@ let handleFormSubmit = e => {
     e.preventDefault();
 
     let cityInput = cityInputEl.val();
-    console.log(cityInput);
+    //console.log(cityInput);
     let newGeoApi = geoApi + cityInput + "&limit=1&appid=" + ApiKey;
     fetch(newGeoApi)
         .then(function (response) {
@@ -30,7 +30,7 @@ let handleFormSubmit = e => {
             return response.json();
         })
         .then(function (locRes) {
-            console.log(locRes[0].lat, locRes[0].lon);
+            //console.log(locRes[0].lat, locRes[0].lon);
             lat = locRes[0].lat;
             long = locRes[0].lon;        
             let newForecastApi = forecastApi + lat + "&lon=" + long + "&appid=" + ApiKey + "&units=imperial";
@@ -43,6 +43,7 @@ let handleFormSubmit = e => {
                     return response.json();
                  })
                 .then(function (forecastData) {
+                    //console.log(forecastData.city.name);
                     for (let i = 0; i < forecastData.list.length; i++) {
                         let hour = moment.unix(forecastData.list[i].dt).format("H");
                         let dayOfTheMonth = moment.unix(forecastData.list[i].dt).format("MMM Do");
@@ -59,17 +60,19 @@ let handleFormSubmit = e => {
                             hourStr = hour + 'am'
                         }
 
-
                         let forecastObject = {
                             day: dayOfTheMonth,
                             time: hourStr,
-                            temp: forecastData.list[i].main.temp,
-                            humidity: forecastData.list[i].main.humidity,
-                            wind: forecastData.list[i].wind.speed
+                            temp: forecastData.list[i].main.temp + 'F',
+                            humidity: forecastData.list[i].main.humidity + "%",
+                            wind: forecastData.list[i].wind.speed + "mph"
                         };
                         
                         forecast.push(forecastObject);
                     }
+
+                    
+                    localStorage.setItem(forecastData.city.name, JSON.stringify(forecast));
 
                     for (let i = 0; i < forecast.length; i++) {
                         
@@ -96,7 +99,7 @@ let handleFormSubmit = e => {
                     currentWeather.temp = currentWeatherData.main.temp;
                     currentWeather.humidity = currentWeatherData.main.humidity;
                     currentWeather.wind = currentWeatherData.wind.speed;
-                    console.log(currentWeather);
+                    //console.log(currentWeather);
             })
         })
 }
